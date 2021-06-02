@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { ProductState } from './products/state/product.reducer';
-import { Load } from './products/state/product.actions'
+import { Store } from '@ngrx/store';
+
+
 
 
 @Component({
@@ -11,9 +11,9 @@ import { Load } from './products/state/product.actions'
 })
 export class AppComponent implements OnInit {
 
-  constructor(private store: Store<ProductState>) { }
+  constructor() { }
   ngOnInit() {
-    this.store.dispatch(new Load())
+
 
 
   }

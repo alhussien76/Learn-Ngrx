@@ -1,37 +1,15 @@
 import { Product } from "../product";
 import * as fromRoot from '../../state/app.state'
-import { createFeatureSelector, createSelector } from "@ngrx/store";
 import * as fromProductActions from './product.actions'
+import { ProductState } from "./index";
 
-export interface AppState extends fromRoot.AppState {
-    products: ProductState
-}
-export interface ProductState {
-    showProductCode: boolean
-    currentProduct: Product
-    products: Product[]
-}
+
 const initialState: ProductState = {
     showProductCode: false,
-    currentProduct: null,
-    products: []
+    currentProductId: null,
+    products: [],
+    error: null
 }
-
-const getProductFeatureState = (state: AppState) => state.products
-
-export const getShowProductCode = createSelector(
-    getProductFeatureState,
-    state => state.showProductCode
-)
-export const getCurrentProduct = createSelector(
-    getProductFeatureState,
-    state => state.currentProduct
-)
-export const getProducts = createSelector(
-    getProductFeatureState,
-    state => state.products
-)
-
 
 export function productsReducer(state = initialState, action: fromProductActions.ProductsActions): ProductState {
     switch (action.type) {
@@ -43,29 +21,70 @@ export function productsReducer(state = initialState, action: fromProductActions
         case fromProductActions.ProductActionTypes.SetCurrentProduct:
             return {
                 ...state,
-                currentProduct: { ...action.payload }
+                currentProductId: action.payload.id
             }
         case fromProductActions.ProductActionTypes.ClearCurrentPrdouct:
             return {
                 ...state,
-                currentProduct: null
+                currentProductId: null
             }
         case fromProductActions.ProductActionTypes.IntializeCurrentProduct:
             return {
                 ...state,
-                currentProduct: {
-                    id: 0,
-                    productName: '',
-                    productCode: 'New',
-                    description: '',
-                    starRating: 0
-                }
+                currentProductId: 0
             }
         case fromProductActions.ProductActionTypes.LoadSuccess:
             return {
                 ...state,
-                products: [...action.payload]
+                products: [...action.payload],
+                error: null
             }
+        case fromProductActions.ProductActionTypes.LoadFail:
+            return {
+                ...state,
+                products: [],
+                error: action.payload
+            }
+        case fromProductActions.ProductActionTypes.UpdateSuccess:
+            const itemIndex = state.products.findIndex(p => p.id === action.payload.id)
+            const updatedProducts = [...state.products]
+            updatedProducts[itemIndex] = { ...action.payload }
+            // OR
+            // const updatedProducts = state.products
+            //     .map(item => item.id === action.payload.id ? action.payload : item)
+            return {
+                ...state,
+                products: updatedProducts,
+                currentProductId: action.payload.id,
+                error: null
+            }
+        case fromProductActions.ProductActionTypes.Updatefailed:
+            return {
+                ...state,
+                error: action.payload
+            }
+        case fromProductActions.ProductActionTypes.DeleteSuccess:
+            const newProducts = state.products.filter(item => item.id != action.payload)
+            return {
+                ...state,
+                products: newProducts,
+                error: null,
+                currentProductId: null
+            }
+        case fromProductActions.ProductActionTypes.DeleteFailed:
+            return {
+                ...state,
+                error: action.payload
+            }
+
+        case fromProductActions.ProductActionTypes.AddSuccess:
+            console.log([...state.products, action.payload])
+            return {
+                ...state,
+                products: [...state.products, action.payload],
+                error: null
+            }
+
         default:
             return state
     }
