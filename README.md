@@ -1,8 +1,14 @@
 # APM-Demo0
 
+
 Starter files with no NgRx added.
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.3.
+
+## Featur Used 
+-Ngrx state mangement  
+-OnPush stratege for changes detection  
+-Container and presentational architecture 
 
 ## Development server
 
